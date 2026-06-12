@@ -17,7 +17,10 @@ function Points({ text }: { text: string }) {
     }
     return a
   }, [targets])
-  const { pointer } = useThree()
+  const { pointer, size } = useThree()
+  // Scale the wordmark down on narrow viewports so "BN" never clips off-screen,
+  // and lift it slightly above center to leave room for the name below.
+  const scale = Math.min(1, size.width / 640)
   useFrame((_, dt) => {
     const geo = ref.current?.geometry
     if (!geo) return
@@ -33,7 +36,7 @@ function Points({ text }: { text: string }) {
     if (ref.current) ref.current.rotation.y = pointer.x * 0.25
   })
   return (
-    <points ref={ref}>
+    <points ref={ref} scale={scale} position={[0, 0.9, 0]}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>

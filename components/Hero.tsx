@@ -10,22 +10,24 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative h-screen overflow-hidden"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_55%,#15132b,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,#15132b,transparent_70%)]" />
       <ParticleField text="BN" />
       <noscript>
-        <div className="text-7xl font-display font-bold">BN</div>
+        <div className="absolute inset-0 flex items-center justify-center text-7xl font-display font-bold">
+          BN
+        </div>
       </noscript>
-      <div className="relative z-10 text-center pointer-events-none">
-        <p className="font-display text-2xl md:text-3xl tracking-tight text-white/80">
+      <div className="absolute inset-x-0 bottom-[20%] z-10 text-center pointer-events-none px-6">
+        <p className="font-display text-3xl md:text-5xl tracking-tight text-white">
           Ben Nudelman
         </p>
-        <p className="mt-2 text-sm text-white/50">
+        <p className="mt-3 text-sm md:text-base text-white/50">
           CS @ Cornell · builder of apps with real purpose
         </p>
       </div>
-      <div className="absolute bottom-8 text-white/40 text-xs tracking-widest animate-bounce">
+      <div className="absolute inset-x-0 bottom-8 z-10 text-center text-white/40 text-xs tracking-widest animate-bounce">
         SCROLL
       </div>
     </section>

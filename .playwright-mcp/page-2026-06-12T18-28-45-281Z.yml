@@ -1,0 +1,203 @@
+- generic [ref=e1]:
+  - navigation [ref=e2]:
+    - link "BN" [ref=e3] [cursor=pointer]:
+      - /url: "#hero"
+    - generic [ref=e4]:
+      - link "Work" [ref=e5] [cursor=pointer]:
+        - /url: "#work"
+      - link "About" [ref=e6] [cursor=pointer]:
+        - /url: "#about"
+      - link "Experience" [ref=e7] [cursor=pointer]:
+        - /url: "#experience"
+      - link "Contact" [ref=e8] [cursor=pointer]:
+        - /url: "#contact"
+  - main [ref=e9]:
+    - generic [ref=e10]:
+      - generic:
+        - paragraph: Ben Nudelman
+        - paragraph: CS @ Cornell · builder of apps with real purpose
+      - generic [ref=e12]: SCROLL
+    - generic [ref=e13]:
+      - paragraph [ref=e14]: 01 — About
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - heading "Hi, I'm Ben Nudelman. I have a passion for developing apps that have a real-world purpose, and I love turning my ideas into code." [level=2] [ref=e17]
+          - paragraph [ref=e18]: I am studying computer science at Cornell University with a minor in Operations Research and Information Engineering (ORIE) as well as a minor in Applied Mathematics. My expected graduation date is May 2028, but I may graduate early in May 2027.
+          - paragraph [ref=e19]: I'm a developer who enjoys working across the stack, implementing front-end interfaces, backend systems, and everything in between.
+          - paragraph [ref=e20]: While I am not coding you can find me at the gym, playing basketball, playing poker, enjoying stock trading, or spending time with my friends and family.
+        - img "Ben Nudelman" [ref=e21]
+    - generic [ref=e22]:
+      - paragraph [ref=e23]: 02 — Selected Work
+      - heading "Things I've built" [level=2] [ref=e24]
+      - generic [ref=e25]:
+        - button "SimplifyCS Next.js A CS education platform where instructors organize content into courses, units, and lessons. Students work through articles, quizzes, and assignments, with sign-in and email verification. Web Development ↗" [active] [ref=e26]:
+          - generic [ref=e27]:
+            - heading "SimplifyCS" [level=3] [ref=e28]
+            - generic [ref=e29]: Next.js
+          - paragraph [ref=e30]: A CS education platform where instructors organize content into courses, units, and lessons. Students work through articles, quizzes, and assignments, with sign-in and email verification.
+          - generic [ref=e31]: Web Development ↗
+        - button "UniRides Swift iOS app that helps students discover, join, and create carpools for trips home from university. Mobile ↗" [ref=e32]:
+          - generic [ref=e33]:
+            - heading "UniRides" [level=3] [ref=e34]
+            - generic [ref=e35]: Swift
+          - paragraph [ref=e36]: iOS app that helps students discover, join, and create carpools for trips home from university.
+          - generic [ref=e37]: Mobile ↗
+        - button "In21 React Native Co-founded a productivity application for teenagers and young adults focused on self-improvement. We believe that 21 days is enough time to turn any activity into a habit, and as such we created an app to make this happen. Mobile ↗" [ref=e38]:
+          - generic [ref=e39]:
+            - heading "In21" [level=3] [ref=e40]
+            - generic [ref=e41]: React Native
+          - paragraph [ref=e42]: Co-founded a productivity application for teenagers and young adults focused on self-improvement. We believe that 21 days is enough time to turn any activity into a habit, and as such we created an app to make this happen.
+          - generic [ref=e43]: Mobile ↗
+        - button "DES Software Distribution C / Python Secure firmware distribution system for automobiles. We built a software installer/updater so firmware updates stay confidential and tamper-proof. Embedded Systems ↗" [ref=e44]:
+          - generic [ref=e45]:
+            - heading "DES Software Distribution" [level=3] [ref=e46]
+            - generic [ref=e47]: C / Python
+          - paragraph [ref=e48]: Secure firmware distribution system for automobiles. We built a software installer/updater so firmware updates stay confidential and tamper-proof.
+          - generic [ref=e49]: Embedded Systems ↗
+        - button "Music Recommender OCaml Music playlist app that recommends songs based on seed tracks or artists. You pick a few songs or artists you like and get a playlist built from learned musical attributes and similarity. Machine Learning ↗" [ref=e50]:
+          - generic [ref=e51]:
+            - heading "Music Recommender" [level=3] [ref=e52]
+            - generic [ref=e53]: OCaml
+          - paragraph [ref=e54]: Music playlist app that recommends songs based on seed tracks or artists. You pick a few songs or artists you like and get a playlist built from learned musical attributes and similarity.
+          - generic [ref=e55]: Machine Learning ↗
+        - button "2FA Pipeline C / C++ At Cornell Custom Silicon Systems (C2S2), I work on a secure two-factor authentication system that uses the device's microphone and motion sensors to verify the user. The repository is private and owned by the C2S2 project team. Embedded Systems ↗" [ref=e56]:
+          - generic [ref=e57]:
+            - heading "2FA Pipeline" [level=3] [ref=e58]
+            - generic [ref=e59]: C / C++
+          - paragraph [ref=e60]: At Cornell Custom Silicon Systems (C2S2), I work on a secure two-factor authentication system that uses the device's microphone and motion sensors to verify the user. The repository is private and owned by the C2S2 project team.
+          - generic [ref=e61]: Embedded Systems ↗
+        - 'button "Eta Compiler Java A compiler in progress built with a team of three. We''re implementing the standard pipeline: lexing, parsing, semantic analysis, and code generation. The repository is private. Systems ↗" [ref=e62]':
+          - generic [ref=e63]:
+            - heading "Eta Compiler" [level=3] [ref=e64]
+            - generic [ref=e65]: Java
+          - paragraph [ref=e66]: "A compiler in progress built with a team of three. We're implementing the standard pipeline: lexing, parsing, semantic analysis, and code generation. The repository is private."
+          - generic [ref=e67]: Systems ↗
+      - generic [ref=e180]:
+        - button "Close" [ref=e181]: ✕
+        - paragraph [ref=e182]: Feb 2023 – Jan 2024
+        - heading "SimplifyCS" [level=3] [ref=e183]
+        - paragraph [ref=e184]: A CS education platform where instructors organize content into courses, units, and lessons. Students work through articles, quizzes, and assignments, with sign-in and email verification.
+        - list [ref=e185]:
+          - listitem [ref=e186]: "Curriculum hierarchy: course → unit → lesson"
+          - listitem [ref=e187]: Polymorphic lesson content via activity index (Article/Quiz/Assignment)
+          - listitem [ref=e188]: REST CRUD + admin-only delete with authorization
+          - listitem [ref=e189]: Token-based sessions, bcrypt passwords, HTTP cookie auth
+          - listitem [ref=e190]: Email verification (6-digit code in verify table)
+          - listitem [ref=e191]: Orphan prevention and consistent ordering under concurrent requests
+          - listitem [ref=e192]: Input validation and type coercion across endpoints
+        - generic [ref=e193]:
+          - generic [ref=e194]: Next.js
+          - generic [ref=e195]: Node.js
+          - generic [ref=e196]: MongoDB
+          - generic [ref=e197]: Prisma
+          - generic [ref=e198]: bcrypt
+        - code [ref=e200]: "// Activity index: polymorphic lesson content const activityIndex = lesson.activities.map((a, order) => ({ model: a.model, // 'Article' | 'Quiz' | 'Assignment' itemId: a.itemId, order })); // REST-style CRUD with auth export async function deleteUnit(req, res) { await requireAdmin(req); const { id } = req.params; await prisma.unit.delete({ where: { id } }); await reorderSiblings(id); res.json({ ok: true }); }"
+        - link "GitHub" [ref=e202] [cursor=pointer]:
+          - /url: https://github.com/randysim/simplifycs
+    - generic [ref=e68]:
+      - paragraph [ref=e69]: 03 — Experience
+      - heading "Where I've worked" [level=2] [ref=e70]
+      - generic [ref=e71]:
+        - paragraph [ref=e73]: 2025 — Present
+        - heading "Role Title · Organizationplaceholder" [level=3] [ref=e74]:
+          - text: Role Title
+          - generic [ref=e75]: · Organization
+          - text: placeholder
+        - list [ref=e76]:
+          - listitem [ref=e77]: What you did — replace this.
+          - listitem [ref=e78]: Impact / result — replace this.
+      - generic [ref=e79]:
+        - paragraph [ref=e81]: 2024 — 2025
+        - heading "Role Title · Organizationplaceholder" [level=3] [ref=e82]:
+          - text: Role Title
+          - generic [ref=e83]: · Organization
+          - text: placeholder
+        - list [ref=e84]:
+          - listitem [ref=e85]: What you did — replace this.
+          - listitem [ref=e86]: Impact / result — replace this.
+    - generic [ref=e87]:
+      - paragraph [ref=e88]: 04 — Skills
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - heading "Languages" [level=3] [ref=e91]
+          - generic [ref=e92]:
+            - generic [ref=e93]: Java
+            - generic [ref=e94]: JavaScript
+            - generic [ref=e95]: Swift
+            - generic [ref=e96]: Python
+            - generic [ref=e97]: C
+            - generic [ref=e98]: C++
+            - generic [ref=e99]: OCaml
+            - generic [ref=e100]: SQL
+            - generic [ref=e101]: HTML/CSS
+            - generic [ref=e102]: BASH
+            - generic [ref=e103]: Assembly
+        - generic [ref=e104]:
+          - heading "Speaking Languages" [level=3] [ref=e105]
+          - generic [ref=e106]:
+            - generic [ref=e107]: English — Native
+            - generic [ref=e108]: Russian — Intermediate
+            - generic [ref=e109]: French — Advanced
+        - generic [ref=e110]:
+          - heading "Frameworks & Libraries" [level=3] [ref=e111]
+          - generic [ref=e112]:
+            - generic [ref=e113]: React
+            - generic [ref=e114]: React Native
+            - generic [ref=e115]: Next.js
+            - generic [ref=e116]: Node.js
+            - generic [ref=e117]: UIKit
+            - generic [ref=e118]: Bogue
+            - generic [ref=e119]: TensorFlow Lite
+            - generic [ref=e120]: TensorFlow
+            - generic [ref=e121]: Scikit-learn
+            - generic [ref=e122]: D3.js
+            - generic [ref=e123]: Flask
+            - generic [ref=e124]: Express
+        - generic [ref=e125]:
+          - heading "Tools & Platforms" [level=3] [ref=e126]
+          - generic [ref=e127]:
+            - generic [ref=e128]: Git
+            - generic [ref=e129]: Vite
+            - generic [ref=e130]: Firebase
+            - generic [ref=e131]: MongoDB
+            - generic [ref=e132]: Prisma
+            - generic [ref=e133]: Docker
+            - generic [ref=e134]: JFlex
+            - generic [ref=e135]: CUP
+            - generic [ref=e136]: Dune
+            - generic [ref=e137]: OUnit
+            - generic [ref=e138]: Makefile
+            - generic [ref=e139]: Figma
+        - generic [ref=e140]:
+          - heading "Specialized" [level=3] [ref=e141]
+          - generic [ref=e142]:
+            - generic [ref=e143]: TinyML
+            - generic [ref=e144]: REST APIs
+            - generic [ref=e145]: Codable
+            - generic [ref=e146]: BearSSL
+            - generic [ref=e147]: PyCryptoDome
+            - generic [ref=e148]: Tailwind CSS
+            - generic [ref=e149]: bcrypt
+        - generic [ref=e150]:
+          - heading "Other" [level=3] [ref=e151]
+          - generic [ref=e152]:
+            - generic [ref=e153]: Full-stack development
+            - generic [ref=e154]: Mobile development
+            - generic [ref=e155]: Embedded systems
+            - generic [ref=e156]: Problem solving
+    - generic [ref=e157]:
+      - paragraph [ref=e158]: 05 — Contact
+      - heading "Say hi, I'm happy to connect and meet new people." [level=2] [ref=e159]
+      - link "bnudelman2@gmail.com" [ref=e160] [cursor=pointer]:
+        - /url: mailto:bnudelman2@gmail.com
+      - generic [ref=e161]:
+        - link "LinkedIn" [ref=e162] [cursor=pointer]:
+          - /url: https://www.linkedin.com/in/nudelman-ben
+        - link "GitHub" [ref=e163] [cursor=pointer]:
+          - /url: https://github.com/bnudelman4
+        - link "Resume" [ref=e164] [cursor=pointer]:
+          - /url: /Resume.pdf
+  - contentinfo [ref=e165]: © 2026 Ben Nudelman · Built with Next.js + three.js
+  - button "Open Next.js Dev Tools" [ref=e175] [cursor=pointer]:
+    - img [ref=e176]
+  - alert [ref=e166]
