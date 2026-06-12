@@ -8,7 +8,7 @@ import { poseAtOffset } from './cameraKeyframes'
 export default function CameraRig() {
   const scroll = useScroll()
   const { camera } = useThree()
-  const look = useRef(new THREE.Vector3(-1.3, 4.6, -11)) // start aimed at room center
+  const look = useRef(new THREE.Vector3(0, 2.1, -1.2)) // start aimed at the desk
   const targetPos = useRef(new THREE.Vector3())
   const targetLook = useRef(new THREE.Vector3())
   useFrame((_, dt) => {

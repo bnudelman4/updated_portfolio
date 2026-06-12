@@ -27,6 +27,13 @@ body {
   transform: translateY(32px);
 }
 
+/* Inside the 3D experience the sections live in drei <Scroll html>, which does not
+   drive window-based GSAP ScrollTrigger — so reveal targets there are simply shown. */
+#portfolio .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
