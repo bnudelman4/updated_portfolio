@@ -9,21 +9,23 @@ export default function Scene() {
   return (
     <group>
       <primitive object={scene} />
-      {/* First-pass lighting for a room-scale (~30u) model; tuned later.
-          Warm key + cool fill + a CRT-glow point light near the screens. */}
-      <ambientLight intensity={0.5} />
+      {/* Warm, cozy room lighting for the flat-material model (henry-heffernan vibe). */}
+      <hemisphereLight args={['#ffe9c8', '#202028', 0.9]} />
+      <ambientLight intensity={0.55} />
       <directionalLight
-        position={[8, 16, 10]}
-        intensity={1.3}
+        position={[8, 18, 12]}
+        intensity={2.1}
         color="#ffd9a0"
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-      <pointLight position={[-1.3, 5.5, -9]} intensity={2.2} color="#86b8ff" distance={14} />
-      <pointLight position={[6, 7, -4]} intensity={1.2} color="#ffb37e" distance={18} />
-      <Environment preset="apartment" />
-      <ContactShadows position={[0, 0.02, -8]} opacity={0.45} scale={50} blur={2.6} far={20} />
+      {/* CRT glow + warm desk fill */}
+      <pointLight position={[-1.3, 5.5, -9]} intensity={6} color="#9fd0ff" distance={16} decay={1.4} />
+      <pointLight position={[6, 6, -4]} intensity={5} color="#ffb37e" distance={20} decay={1.4} />
+      <pointLight position={[-8, 7, -14]} intensity={4} color="#ffcaa0" distance={22} decay={1.4} />
+      <Environment preset="apartment" environmentIntensity={0.7} />
+      <ContactShadows position={[0, 0.02, -8]} opacity={0.5} scale={55} blur={2.8} far={22} />
     </group>
   )
 }

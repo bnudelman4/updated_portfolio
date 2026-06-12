@@ -6,11 +6,16 @@ export interface Keyframe { offset: number; position: Vec3; lookAt: Vec3 }
 // Scene center ~(-1.3, 4.6, -11); floor at y~0. Camera lives in tens of units and
 // always aims near the room center. Act1 establish -> Act2 screen-readable -> Act3 handoff -> Act4 parked.
 export const KEYFRAMES: Keyframe[] = [
-  { offset: 0.0,  position: [12, 9, 10],  lookAt: [-1.3, 4.6, -11] },
-  { offset: 0.18, position: [5, 6, 2],    lookAt: [-1.3, 4.8, -11] },
-  { offset: 0.32, position: [0, 5.2, -4], lookAt: [-1.3, 5.0, -11] },
-  { offset: 0.45, position: [7, 9, 7],    lookAt: [-1.3, 4.0, -12] },
-  { offset: 1.0,  position: [9, 9, 9],    lookAt: [-1.3, 4.0, -13] },
+  // The glowing "BEN NUDELMAN" terminal is only visible through a narrow sightline at the
+  // establishing angle, so the camera PULLS BACK along that view axis: the cozy room (and the
+  // terminal) stays centered while gracefully receding, then hands off to the portfolio text.
+  // PURE ON-AXIS DOLLY back along the establishing view ray (dir ≈ [0.565,0.209,0.784]).
+  // lookAt is held EXACTLY constant so the terminal stays centered and its narrow sightline
+  // stays open the whole time — the room gracefully recedes, then content scrolls over.
+  { offset: 0.0,  position: [16, 11, 14],       lookAt: [-1.3, 4.6, -10] },
+  { offset: 0.30, position: [19.4, 12.3, 18.7], lookAt: [-1.3, 4.6, -10] },
+  { offset: 0.50, position: [22.8, 13.5, 23.4], lookAt: [-1.3, 4.6, -10] },
+  { offset: 1.0,  position: [26.2, 14.8, 28.1], lookAt: [-1.3, 4.6, -10] }
 ]
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t

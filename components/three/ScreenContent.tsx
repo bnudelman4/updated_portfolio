@@ -6,7 +6,8 @@ export default function ScreenContent() {
     <Html
       transform
       occlude
-      position={[-1.3, 5.0, -10.4]}   // first pass — tuned to the monitor face later
+      // Mounted on the back terminal where it reads cleanly in the wide establishing framing.
+      position={[-1.3, 5.0, -10.4]}
       rotation={[0, 0, 0]}
       scale={0.6}
       distanceFactor={8}

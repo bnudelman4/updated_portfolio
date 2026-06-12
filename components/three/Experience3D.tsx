@@ -15,8 +15,14 @@ import Footer from '@/components/Footer'
 
 export default function Experience3D() {
   return (
-    <Canvas dpr={[1, 1.75]} gl={{ antialias: true }} camera={{ position: [12, 9, 10], fov: 45 }} shadows>
-      <color attach="background" args={['#06060A']} />
+    <Canvas
+      dpr={[1, 1.75]}
+      gl={{ antialias: true, toneMappingExposure: 1.35 }}
+      camera={{ position: [16, 11, 14], fov: 42 }}
+      shadows
+    >
+      <color attach="background" args={['#0a0810']} />
+      <fog attach="fog" args={['#0a0810', 16, 60]} />
       <Suspense fallback={null}>
         <ScrollControls pages={7} damping={0.25}>
           <Scene />
@@ -24,7 +30,7 @@ export default function Experience3D() {
           <CameraRig />
           <Scroll html style={{ width: '100%' }}>
             {/* spacer reserves scroll room for the 3D camera acts before sections appear */}
-            <div style={{ height: '250vh' }} />
+            <div style={{ height: '320vh' }} />
             <div className="bg-bg">
               <About />
               <Work />
