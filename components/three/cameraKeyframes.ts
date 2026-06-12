@@ -11,12 +11,13 @@ export const KEYFRAMES: Keyframe[] = [
   // terminal) stays centered while gracefully receding, then hands off to the portfolio text.
   // FLY INTO THE SCREEN. Desk recentered ~6u at origin; CRT face at (-0.12, 3.02, -1.29) facing +z.
   // establish (slight arc) -> fly in -> push into the screen until it fills the viewport (crossfade at ~0.82).
-  // Fly-in completes by offset ~0.30 (crossfade fires there); 0.30→1.0 is the portfolio scroll.
-  { offset: 0.0,  position: [2.6, 3.5, 8.6],      lookAt: [0, 2.1, -1.2] },       // establish, arced
-  { offset: 0.06, position: [0.2, 3.3, 7.8],      lookAt: [-0.12, 2.7, -1.29] },  // settle, center on desk
-  { offset: 0.16, position: [-0.12, 3.12, 3.2],   lookAt: [-0.12, 3.02, -1.29] }, // approach monitor
-  { offset: 0.24, position: [-0.12, 3.04, 0.4],   lookAt: [-0.12, 3.02, -1.29] }, // push — screen ~fills
-  { offset: 0.30, position: [-0.12, 3.02, -0.55], lookAt: [-0.12, 3.02, -1.29] }, // into the screen (fills)
+  // Start far & zoomed out into the studio, sweep LEFT->RIGHT around the desk, then fly into the
+  // screen. Fly-in completes by offset ~0.31 (crossfade fires there); 0.31→1.0 is the portfolio.
+  { offset: 0.0,  position: [-8, 6.5, 18],        lookAt: [0, 2.4, -2] },         // far, left, zoomed out
+  { offset: 0.12, position: [7, 4.2, 10],         lookAt: [-0.12, 2.9, -1.3] },   // swept right, closer
+  { offset: 0.20, position: [-0.12, 3.2, 4.5],    lookAt: [-0.12, 3.02, -1.29] }, // centered, approach monitor
+  { offset: 0.26, position: [-0.12, 3.05, 1.3],   lookAt: [-0.12, 3.02, -1.29] }, // push — screen ~fills
+  { offset: 0.31, position: [-0.12, 3.02, -0.55], lookAt: [-0.12, 3.02, -1.29] }, // into the screen (fills)
   { offset: 1.0,  position: [-0.12, 3.02, -0.72], lookAt: [-0.12, 3.02, -1.29] }  // hold (handed off)
 ]
 

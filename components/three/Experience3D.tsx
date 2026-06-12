@@ -41,10 +41,10 @@ function CrossfadeController() {
 export default function Experience3D() {
   return (
     <Canvas
-      dpr={[1, 1.75]}
-      gl={{ antialias: true, toneMappingExposure: 1.2 }}
-      camera={{ position: [2.6, 3.5, 8.6], fov: 40 }}
-      shadows
+      dpr={[1, 2]}
+      gl={{ antialias: true, toneMappingExposure: 1.05 }}
+      camera={{ position: [-8, 6.5, 18], fov: 40 }}
+      shadows="soft"
     >
       <color attach="background" args={['#070710']} />
       <Suspense fallback={null}>
