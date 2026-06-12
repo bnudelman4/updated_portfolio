@@ -10,7 +10,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@vercel/analytics": "^2.0.1",
     "gsap": "^3.15.0",

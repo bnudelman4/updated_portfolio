@@ -1,5 +1,6 @@
 'use client'
 import dynamic from 'next/dynamic'
+import CanvasErrorBoundary from './three/CanvasErrorBoundary'
 
 const ParticleField = dynamic(() => import('./three/ParticleField'), {
   ssr: false,
@@ -13,7 +14,17 @@ export default function Hero() {
       className="relative h-screen overflow-hidden"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,#15132b,transparent_70%)]" />
-      <ParticleField text="BN" />
+      <CanvasErrorBoundary
+        fallback={
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-display text-[28vw] md:text-[20vw] font-bold text-white/10 select-none">
+              BN
+            </span>
+          </div>
+        }
+      >
+        <ParticleField text="BN" />
+      </CanvasErrorBoundary>
       <noscript>
         <div className="absolute inset-0 flex items-center justify-center text-7xl font-display font-bold">
           BN

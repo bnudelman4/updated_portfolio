@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Project } from '@/lib/types'
 import { projectLinks } from '@/lib/links'
 
@@ -10,13 +10,17 @@ export default function ProjectDetail({
   project: Project
   onClose: () => void
 }) {
+  const closeRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
+    const prev = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
     return () => {
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = ''
+      prev?.focus?.()
     }
   }, [onClose])
   return (
@@ -26,9 +30,13 @@ export default function ProjectDetail({
     >
       <div
         className="relative max-w-2xl w-full max-h-[85vh] overflow-y-auto rounded-2xl border border-line bg-surface p-8"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-detail-title"
         onClick={(e) => e.stopPropagation()}
       >
         <button
+          ref={closeRef}
           onClick={onClose}
           aria-label="Close"
           className="absolute top-4 right-4 text-white/50 hover:text-white"
@@ -36,7 +44,7 @@ export default function ProjectDetail({
           ✕
         </button>
         <p className="text-xs text-white/40">{project.timeframe}</p>
-        <h3 className="font-display text-2xl mt-1">{project.name}</h3>
+        <h3 id="project-detail-title" className="font-display text-2xl mt-1">{project.name}</h3>
         <p className="mt-3 text-white/60">{project.description}</p>
         <ul className="mt-5 space-y-2">
           {project.features.map((f, i) => (

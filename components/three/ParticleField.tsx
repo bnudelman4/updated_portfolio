@@ -1,10 +1,16 @@
 'use client'
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { sampleText } from './useTextParticles'
 
-function Points({ text }: { text: string }) {
+function Points({
+  text,
+  activeRef,
+}: {
+  text: string
+  activeRef: React.MutableRefObject<boolean>
+}) {
   const ref = useRef<THREE.Points>(null)
   const targets = useMemo(() => sampleText(text, 1400), [text])
   const positions = useMemo(() => {
@@ -18,10 +24,10 @@ function Points({ text }: { text: string }) {
     return a
   }, [targets])
   const { pointer, size } = useThree()
-  // Scale the wordmark down on narrow viewports so "BN" never clips off-screen,
-  // and lift it slightly above center to leave room for the name below.
+  // Scale the wordmark down on narrow viewports so "BN" never clips off-screen.
   const scale = Math.min(1, size.width / 640)
   useFrame((_, dt) => {
+    if (!activeRef.current) return
     const geo = ref.current?.geometry
     if (!geo) return
     const pos = geo.attributes.position as THREE.BufferAttribute
@@ -52,14 +58,30 @@ function Points({ text }: { text: string }) {
 }
 
 export default function ParticleField({ text = 'BN' }: { text?: string }) {
+  const wrap = useRef<HTMLDivElement>(null)
+  const activeRef = useRef(true)
+  useEffect(() => {
+    const el = wrap.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        activeRef.current = entry.isIntersecting
+      },
+      { threshold: 0 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
   return (
-    <Canvas
-      camera={{ position: [0, 0, 9], fov: 50 }}
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true }}
-      style={{ position: 'absolute', inset: 0 }}
-    >
-      <Points text={text} />
-    </Canvas>
+    <div ref={wrap} style={{ position: 'absolute', inset: 0 }}>
+      <Canvas
+        camera={{ position: [0, 0, 9], fov: 50 }}
+        dpr={[1, 2]}
+        gl={{ antialias: true, alpha: true }}
+        style={{ position: 'absolute', inset: 0 }}
+      >
+        <Points text={text} activeRef={activeRef} />
+      </Canvas>
+    </div>
   )
 }
