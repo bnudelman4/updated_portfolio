@@ -1,28 +1,30 @@
+'use client'
+import { motion, useReducedMotion } from 'framer-motion'
+import { POP, staggerInView } from '@/lib/anim'
+
 export default function Footer() {
+  const reduced = useReducedMotion() ?? false
+  const stagger = reduced ? {} : staggerInView
+  const item = reduced ? {} : { variants: POP }
   return (
-    <footer className="border-t border-line py-8 text-center text-xs text-white/40 space-y-1">
-      <p>© 2026 Ben Nudelman · Built with Next.js + three.js</p>
-      <p className="text-white/30">
-        3D model:{' '}
-        <a
-          href="https://sketchfab.com/3d-models/low-poly-computer-desk-646ed84ecd9d40089c31d94f79334ca5"
-          target="_blank"
-          rel="noreferrer"
-          className="underline hover:text-white/60"
-        >
-          &ldquo;Low Poly Computer Desk&rdquo; by Nyangire
+    <motion.footer
+      {...stagger}
+      className="border-t border-line py-7 text-center text-xs text-white/40 space-y-2"
+    >
+      <motion.p {...item}>© 2026 Ben Nudelman · Built with Next.js + three.js</motion.p>
+      <motion.p {...item} className="text-white/30">
+        3D model: &ldquo;Complete Office Workplace Setup&rdquo; by Demycs, via{' '}
+        <a href="https://www.blenderkit.com/" target="_blank" rel="noreferrer" className="underline hover:text-white/60">
+          BlenderKit
         </a>{' '}
-        · licensed under{' '}
-        <a
-          href="https://creativecommons.org/licenses/by/4.0/"
-          target="_blank"
-          rel="noreferrer"
-          className="underline hover:text-white/60"
-        >
+        · Royalty Free license
+      </motion.p>
+      <motion.p {...item} className="text-white/30">
+        &ldquo;iMac 2021&rdquo; model by DatSketch · licensed under{' '}
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer" className="underline hover:text-white/60">
           CC BY 4.0
         </a>
-        , modified for this site
-      </p>
-    </footer>
+      </motion.p>
+    </motion.footer>
   )
 }

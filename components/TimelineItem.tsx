@@ -2,7 +2,7 @@ import type { ExperienceEntry } from '@/lib/types'
 
 export default function TimelineItem({ entry }: { entry: ExperienceEntry }) {
   return (
-    <div className="reveal relative pl-8 pb-10 border-l border-line last:pb-0">
+    <div className="relative pl-8 pb-10 border-l border-line last:pb-0">
       <span className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-accent" />
       <p className="text-xs text-white/40">
         {entry.start} — {entry.end}

@@ -1,16 +1,15 @@
 'use client'
-import { EffectComposer, Bloom, DepthOfField, Vignette, Noise, ChromaticAberration } from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
-import { Vector2 } from 'three'
+import { EffectComposer, Bloom, SMAA, Vignette } from '@react-three/postprocessing'
 
+// Lean pipeline: SMAA (MSAA off to avoid conflict), Bloom for the glowing boot screen,
+// a soft vignette to seat the setup in the void. DOF/chromatic/noise intentionally cut —
+// they blur the screen during the push-in and are the first things to drop for fps.
 export default function Effects() {
   return (
     <EffectComposer multisampling={0}>
-      <DepthOfField focusDistance={0.04} focalLength={0.12} bokehScale={2} />
-      <Bloom intensity={0.9} luminanceThreshold={0.55} luminanceSmoothing={0.35} mipmapBlur />
-      <ChromaticAberration blendFunction={BlendFunction.NORMAL} offset={new Vector2(0.0005, 0.0005)} />
-      <Vignette eskil={false} offset={0.3} darkness={0.6} />
-      <Noise premultiply blendFunction={BlendFunction.SCREEN} opacity={0.12} />
+      <SMAA />
+      <Bloom intensity={0.7} luminanceThreshold={0.6} luminanceSmoothing={0.3} mipmapBlur />
+      <Vignette eskil={false} offset={0.32} darkness={0.62} />
     </EffectComposer>
   )
 }

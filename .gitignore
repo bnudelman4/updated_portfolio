@@ -45,3 +45,16 @@ next-env.d.ts
 # superpowers
 .superpowers/
 .playwright-mcp/
+
+#claude
+.claude/
+
+# scratch screenshots at repo root (not referenced by the site)
+/*.png
+
+# unused 3d models (not referenced in code)
+public/models/officeroom.glb
+public/models/imac.glb
+public/models/room.glb
+public/models/room 2.glb
+public/models/desk.glb

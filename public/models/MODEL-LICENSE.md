@@ -1,27 +1,26 @@
 # 3D Model License
 
-**File:** `public/models/desk.glb`
+**Files:** `public/models/officeroom.glb` (source), `public/models/officeroom-web.glb` (optimized, shipped)
 
 | Field | Value |
 | --- | --- |
-| Model name | Low Poly Computer Desk |
-| Author | Nyangire |
-| Source | https://sketchfab.com/3d-models/low-poly-computer-desk-646ed84ecd9d40089c31d94f79334ca5 |
-| License | Creative Commons Attribution 4.0 (CC BY 4.0) |
-| Modified | Recentered, scaled, Draco-compressed; boot terminal overlaid on the CRT face for this site |
+| Model name | Complete Office Workplace Setup |
+| Author | Demycs |
+| Source | BlenderKit (https://www.blenderkit.com/) |
+| License | Royalty Free |
+| Modified | Recentered and scaled at runtime; boot terminal painted onto the monitor's screen material for this site. Optimized for web with gltf-transform (Draco geometry, KTX2/Basis 2K textures) — all objects preserved. |
 
-## Required attribution
+## Credit
 
-CC BY 4.0 requires visible attribution wherever the model is displayed. Credit
-shown in the site footer:
+Footer credit (courtesy, not required by the license):
 
-> "Low Poly Computer Desk" by Nyangire, licensed under CC BY 4.0
-> (https://creativecommons.org/licenses/by/4.0/), modified for this site.
+> "Complete Office Workplace Setup" by Demycs, via BlenderKit, Royalty Free license.
 
 ## Notes
 
-- The CRT screen shares the model's texture atlas (no separate screen material),
-  so the boot terminal is rendered as a `CanvasTexture` on a plane aligned to the
-  monitor face (`Computer_monitor001`, world ~ (-0.12, 3.02, -1.29), facing +z).
-- The previous "Computer Room" model (Bruno Oliveira, CC-BY 3.0) was replaced and
-  is no longer shipped.
+- Do not redistribute the model as a standalone asset.
+- The monitor screen is its own material (`Monitor_screen_mat`, emissive). The boot
+  terminal is rendered as a `CanvasTexture` and assigned as that material's
+  `map`/`emissiveMap`, so the text glows and stays crisp as the camera pushes in.
+- Optimization requires the KTX2 (`ktx`) encoder on PATH; the loader is wired for both
+  KTX2 (Basis transcoder in `public/basis/`) and Draco.

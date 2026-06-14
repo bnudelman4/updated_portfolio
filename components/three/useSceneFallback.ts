@@ -19,3 +19,22 @@ export function useSceneFallback(lowGpu: boolean): boolean {
   }, [lowGpu])
   return fb
 }
+
+export type SceneMode = 'measuring' | 'fallback' | 'three'
+
+// Three-way variant: stays 'measuring' until the GPU tier is known, so the caller can show
+// a neutral loading cover instead of flashing the fallback hero before the decision is made.
+// gpuTier is undefined while drei's useDetectGPU is still resolving.
+export function useSceneMode(gpuTier: number | undefined): SceneMode {
+  const [mode, setMode] = useState<SceneMode>('measuring')
+  useEffect(() => {
+    if (gpuTier === undefined) return // GPU not detected yet — keep measuring
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const smallViewport =
+      window.matchMedia('(max-width: 768px)').matches ||
+      window.matchMedia('(pointer: coarse)').matches
+    const fallback = shouldFallback({ reducedMotion, smallViewport, lowGpu: gpuTier < 2 })
+    setMode(fallback ? 'fallback' : 'three')
+  }, [gpuTier])
+  return mode
+}
