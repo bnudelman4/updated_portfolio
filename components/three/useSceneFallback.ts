@@ -12,9 +12,9 @@ export function useSceneFallback(lowGpu: boolean): boolean {
   const [fb, setFb] = useState(true) // default safe (fallback) until measured
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const smallViewport =
-      window.matchMedia('(max-width: 768px)').matches ||
-      window.matchMedia('(pointer: coarse)').matches
+    // Genuinely small (phone-width) screens only. A coarse pointer alone (touchscreen
+    // laptops, tablets) is NOT a reason to drop the 3D scene.
+    const smallViewport = window.matchMedia('(max-width: 768px)').matches
     setFb(shouldFallback({ reducedMotion, smallViewport, lowGpu }))
   }, [lowGpu])
   return fb
@@ -30,10 +30,11 @@ export function useSceneMode(gpuTier: number | undefined): SceneMode {
   useEffect(() => {
     if (gpuTier === undefined) return // GPU not detected yet — keep measuring
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const smallViewport =
-      window.matchMedia('(max-width: 768px)').matches ||
-      window.matchMedia('(pointer: coarse)').matches
-    const fallback = shouldFallback({ reducedMotion, smallViewport, lowGpu: gpuTier < 2 })
+    // Phone-width screens only. drei's useDetectGPU often reports tier 1 for perfectly
+    // capable integrated GPUs (Intel Iris, Apple M-series, Safari), so only treat a true
+    // tier-0 (no/blocklisted GPU) as low — otherwise desktops wrongly get the static still.
+    const smallViewport = window.matchMedia('(max-width: 768px)').matches
+    const fallback = shouldFallback({ reducedMotion, smallViewport, lowGpu: gpuTier < 1 })
     setMode(fallback ? 'fallback' : 'three')
   }, [gpuTier])
   return mode

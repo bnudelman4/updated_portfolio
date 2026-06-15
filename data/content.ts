@@ -5,7 +5,7 @@ export const about = {
   intro: "I have a passion for developing software with real-world purpose.",
   paragraphs: [
     "I'm a Computer Science major at Cornell University with minors in ORIE (Operations Research and Information Engineering) and Applied Mathematics, with an expected graduation date of December 2027.",
-    "While I'm not coding you can find me at the gym, playing basketball, playing poker, enjoying stock trading, or spending time with my friends and family.",
+    "When I'm not coding you can find me at the gym, playing basketball, playing poker, enjoying stock trading, or spending time with my friends and family.",
   ],
 }
 

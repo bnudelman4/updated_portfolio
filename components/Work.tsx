@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useReducedMotion, useMotionValue, type Variant
 import { projects } from '@/data/projects'
 import IMacStage from './three/IMacStage'
 import { scrollToId } from '@/lib/scroll'
+import { lenisRef } from '@/lib/lenisRef'
 
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
@@ -50,42 +51,70 @@ export default function Work() {
   // index, and close any open detail the moment the user scrolls (so one downward scroll
   // collapses the detail and then advances to the next project).
   useEffect(() => {
-    let raf = 0
-    const tick = () => {
+    // Pin + index update. Driven by the SCROLL SOURCE's own event (Lenis in the 3D path,
+    // native scroll in the fallback) rather than a free-running rAF — a standalone rAF can
+    // read the layout one frame before Lenis writes the new scroll, so the pinned panel lags
+    // the scroll by a frame and visibly jitters. Running on the scroll event keeps it in
+    // lockstep with the scroll, eliminating the jitter.
+    const update = () => {
       const sec = section.current
       const pan = panel.current
-      if (sec && pan) {
-        const r = sec.getBoundingClientRect()
-        const vh = window.innerHeight
-        const range = Math.max(1, sec.offsetHeight - vh)
-        const pinned = clamp(-r.top, 0, range)
-        pan.style.transform = `translateY(${pinned}px)`
+      if (!sec || !pan) return
+      const r = sec.getBoundingClientRect()
+      const vh = window.innerHeight
+      const range = Math.max(1, sec.offsetHeight - vh)
+      const pinned = clamp(-r.top, 0, range)
+      pan.style.transform = `translateY(${pinned}px)`
 
-        const raw = clamp(-r.top / range, 0, 1)
-        phaseRef.current = raw
+      const raw = clamp(-r.top / range, 0, 1)
+      phaseRef.current = raw
 
-        if (openRef.current && Math.abs(raw - lastRaw.current) > 0.0012) setOpen(false)
-        lastRaw.current = raw
+      if (openRef.current && Math.abs(raw - lastRaw.current) > 0.0012) setOpen(false)
+      lastRaw.current = raw
 
-        const i = clamp(Math.round(raw * (projects.length - 1)), 0, projects.length - 1)
-        if (i !== idxRef.current) {
-          idxRef.current = i
-          setIndex(i)
-          if (!reduced) enterAt.current = performance.now() // re-fire the fade-up
-        }
+      const i = clamp(Math.round(raw * (projects.length - 1)), 0, projects.length - 1)
+      if (i !== idxRef.current) {
+        idxRef.current = i
+        setIndex(i)
+        if (!reduced) enterAt.current = performance.now() // re-fire the fade-up
       }
+    }
 
-      // advance the fade-up
+    // Time-based fade-up only (no layout reads → can't cause positional jitter).
+    let raf = 0
+    const fade = () => {
       if (!reduced) {
         if (enterAt.current < 0) enterAt.current = performance.now()
         const e = easeOutCubic(clamp((performance.now() - enterAt.current) / FADE_MS, 0, 1))
         modelOpacity.set(e)
         modelY.set((1 - e) * 22)
       }
-      raf = requestAnimationFrame(tick)
+      raf = requestAnimationFrame(fade)
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    raf = requestAnimationFrame(fade)
+
+    // Native scroll/resize cover the fallback (window-scrolled) path; Lenis covers the 3D
+    // path (scroll happens inside drei's element, not on window). Lenis may attach a tick
+    // after us, so poll briefly until its instance exists.
+    let lenis: typeof lenisRef.current = null
+    const attach = () => {
+      if (lenis || !lenisRef.current) return
+      lenis = lenisRef.current
+      lenis.on('scroll', update)
+    }
+    attach()
+    const retry = window.setInterval(attach, 100)
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    update()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.clearInterval(retry)
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+      if (lenis) lenis.off('scroll', update)
+    }
   }, [reduced, modelOpacity, modelY])
 
   const current = projects[index]
