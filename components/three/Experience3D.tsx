@@ -69,6 +69,25 @@ function Backdrop() {
   return null
 }
 
+// Pin the Work stage in lockstep with the scroll. drei moves the <Scroll html> content via a
+// transform in its OWN useFrame; reading layout on the Lenis scroll event (as a DOM-side rAF/
+// listener would) sees last frame's transform, so the JS-pinned panel lags a frame and shakes.
+// Running the pin here — a useFrame registered AFTER drei's <Scroll html> — reads the panel's
+// freshly-transformed position in the same frame, so the counter-translate is always exact.
+function WorkPin() {
+  // subscribe to scroll so this useFrame re-runs while scrolling (delta-driven invalidation)
+  useScroll()
+  useFrame(() => {
+    const sec = document.getElementById('work')
+    const pan = document.getElementById('work-pin')
+    if (!sec || !pan) return
+    const range = Math.max(1, sec.offsetHeight - window.innerHeight)
+    const pinned = Math.min(range, Math.max(0, -sec.getBoundingClientRect().top))
+    pan.style.transform = `translateY(${pinned}px)`
+  })
+  return null
+}
+
 // Crossfade the WebGL canvas out and the DOM intro in once the name reveal completes.
 function CrossfadeController() {
   const scroll = useScroll()
@@ -125,6 +144,8 @@ export default function Experience3D() {
                 <Footer />
               </div>
             </Scroll>
+            {/* registered after <Scroll html> so its useFrame runs after drei's content transform */}
+            <WorkPin />
           </ScrollControls>
           <Effects />
         </Suspense>

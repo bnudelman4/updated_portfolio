@@ -30,11 +30,11 @@ export function useSceneMode(gpuTier: number | undefined): SceneMode {
   useEffect(() => {
     if (gpuTier === undefined) return // GPU not detected yet — keep measuring
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    // Phone-width screens only. drei's useDetectGPU often reports tier 1 for perfectly
-    // capable integrated GPUs (Intel Iris, Apple M-series, Safari), so only treat a true
-    // tier-0 (no/blocklisted GPU) as low — otherwise desktops wrongly get the static still.
-    const smallViewport = window.matchMedia('(max-width: 768px)').matches
-    const fallback = shouldFallback({ reducedMotion, smallViewport, lowGpu: gpuTier < 1 })
+    // Mobile gets the full 3D desk fly-in too — phone width is NOT a reason to drop it.
+    // (Lenis syncTouch drives the scroll on touch.) Only true tier-0 (no/blocklisted GPU)
+    // or reduced-motion fall back. drei's useDetectGPU often reports tier 1 for perfectly
+    // capable integrated GPUs (Intel Iris, Apple M-series, Safari), so only treat tier-0 as low.
+    const fallback = shouldFallback({ reducedMotion, smallViewport: false, lowGpu: gpuTier < 1 })
     setMode(fallback ? 'fallback' : 'three')
   }, [gpuTier])
   return mode

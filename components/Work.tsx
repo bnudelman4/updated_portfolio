@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion, useMotionValue, type Variants } from 'framer-motion'
+import { useScroll } from '@react-three/drei'
 import { projects } from '@/data/projects'
 import IMacStage from './three/IMacStage'
 import { scrollToId } from '@/lib/scroll'
-import { lenisRef } from '@/lib/lenisRef'
 
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
@@ -25,6 +25,12 @@ const STAGGER: Variants = {
 
 export default function Work() {
   const reduced = useReducedMotion() ?? false
+  // In the 3D path Work renders inside drei's <Scroll html> provider, so useScroll() returns
+  // the scroll state; in the fallback (native-scroll) path it returns null. We pin the panel
+  // with native CSS sticky in the fallback path, and via the in-canvas <WorkPin> controller
+  // (synced to drei's content transform) in the 3D path — never with a lagging JS counter-
+  // translate here, which is what caused the shaky scroll.
+  const inThree = !!useScroll()
   const section = useRef<HTMLElement>(null)
   const panel = useRef<HTMLDivElement>(null)
   const phaseRef = useRef(0)
@@ -46,75 +52,42 @@ export default function Work() {
   const curY = useMotionValue(0)
   const [hovering, setHovering] = useState(false)
 
-  // Emulate `position: sticky` (CSS sticky is broken inside drei's transform-based
-  // <Scroll html>): pin the panel while the tall section scrolls, map scroll → project
-  // index, and close any open detail the moment the user scrolls (so one downward scroll
-  // collapses the detail and then advances to the next project).
+  // The panel is PINNED outside this component — natively via CSS `position: sticky` in the
+  // fallback path, and via the in-canvas <WorkPin> controller (synced to drei's content
+  // transform) in the 3D path. Here we only READ scroll progress to map scroll → project
+  // index, drive the per-project fade-up, and collapse any open detail on scroll. These are
+  // not pixel-positional, so a single rAF reading layout is fine — it can't cause pin jitter.
   useEffect(() => {
-    // Pin + index update. Driven by the SCROLL SOURCE's own event (Lenis in the 3D path,
-    // native scroll in the fallback) rather than a free-running rAF — a standalone rAF can
-    // read the layout one frame before Lenis writes the new scroll, so the pinned panel lags
-    // the scroll by a frame and visibly jitters. Running on the scroll event keeps it in
-    // lockstep with the scroll, eliminating the jitter.
-    const update = () => {
-      const sec = section.current
-      const pan = panel.current
-      if (!sec || !pan) return
-      const r = sec.getBoundingClientRect()
-      const vh = window.innerHeight
-      const range = Math.max(1, sec.offsetHeight - vh)
-      const pinned = clamp(-r.top, 0, range)
-      pan.style.transform = `translateY(${pinned}px)`
-
-      const raw = clamp(-r.top / range, 0, 1)
-      phaseRef.current = raw
-
-      if (openRef.current && Math.abs(raw - lastRaw.current) > 0.0012) setOpen(false)
-      lastRaw.current = raw
-
-      const i = clamp(Math.round(raw * (projects.length - 1)), 0, projects.length - 1)
-      if (i !== idxRef.current) {
-        idxRef.current = i
-        setIndex(i)
-        if (!reduced) enterAt.current = performance.now() // re-fire the fade-up
-      }
-    }
-
-    // Time-based fade-up only (no layout reads → can't cause positional jitter).
     let raf = 0
-    const fade = () => {
+    const tick = () => {
+      const sec = section.current
+      if (sec) {
+        const range = Math.max(1, sec.offsetHeight - window.innerHeight)
+        const raw = clamp(-sec.getBoundingClientRect().top / range, 0, 1)
+        phaseRef.current = raw
+
+        if (openRef.current && Math.abs(raw - lastRaw.current) > 0.0012) setOpen(false)
+        lastRaw.current = raw
+
+        const i = clamp(Math.round(raw * (projects.length - 1)), 0, projects.length - 1)
+        if (i !== idxRef.current) {
+          idxRef.current = i
+          setIndex(i)
+          if (!reduced) enterAt.current = performance.now() // re-fire the fade-up
+        }
+      }
+
+      // Time-based fade-up (independent of scroll).
       if (!reduced) {
         if (enterAt.current < 0) enterAt.current = performance.now()
         const e = easeOutCubic(clamp((performance.now() - enterAt.current) / FADE_MS, 0, 1))
         modelOpacity.set(e)
         modelY.set((1 - e) * 22)
       }
-      raf = requestAnimationFrame(fade)
+      raf = requestAnimationFrame(tick)
     }
-    raf = requestAnimationFrame(fade)
-
-    // Native scroll/resize cover the fallback (window-scrolled) path; Lenis covers the 3D
-    // path (scroll happens inside drei's element, not on window). Lenis may attach a tick
-    // after us, so poll briefly until its instance exists.
-    let lenis: typeof lenisRef.current = null
-    const attach = () => {
-      if (lenis || !lenisRef.current) return
-      lenis = lenisRef.current
-      lenis.on('scroll', update)
-    }
-    attach()
-    const retry = window.setInterval(attach, 100)
-    window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    update()
-
-    return () => {
-      cancelAnimationFrame(raf)
-      window.clearInterval(retry)
-      window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-      if (lenis) lenis.off('scroll', update)
-    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [reduced, modelOpacity, modelY])
 
   const current = projects[index]
@@ -139,8 +112,14 @@ export default function Work() {
 
   return (
     <section id="work" ref={section} style={{ height: `${projects.length * 100}vh` }} className="relative">
-      {/* Pinned stage */}
-      <div ref={panel} className="relative h-screen w-full overflow-hidden">
+      {/* Pinned stage. Fallback path: native CSS sticky (compositor-driven, jitter-free).
+          3D path: position relative; the in-canvas <WorkPin> controller sets the transform. */}
+      <div
+        ref={panel}
+        id="work-pin"
+        style={inThree ? undefined : { position: 'sticky', top: 0 }}
+        className="relative h-screen w-full overflow-hidden"
+      >
         {/* Persistent corner CTA (Scout's "build with us") */}
         <button
           onClick={(e) => { e.currentTarget.blur(); scrollToId('contact') }}
