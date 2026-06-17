@@ -41,12 +41,9 @@ interface Letter {
   key: string
 }
 
-function rowWidths(font: any, row: string): number[] {
-  const res = font.resolution || 1000
-  return [...row].map((ch) => ((font.glyphs[ch] || font.glyphs[' ']).ha / res) * SIZE + GAP)
-}
 function rowCenters(font: any, row: string): number[] {
-  const widths = rowWidths(font, row)
+  const res = font.resolution || 1000
+  const widths = [...row].map((ch) => ((font.glyphs[ch] || font.glyphs[' ']).ha / res) * SIZE + GAP)
   const total = widths.reduce((a, b) => a + b, 0)
   let x = -total / 2
   return widths.map((w) => {
@@ -56,10 +53,8 @@ function rowCenters(font: any, row: string): number[] {
   })
 }
 
-interface NameData { letters: Letter[]; width: number }
-
-function useLetters(): NameData | null {
-  const [data, setData] = useState<NameData | null>(null)
+function useLetters(): Letter[] | null {
+  const [data, setData] = useState<Letter[] | null>(null)
   useEffect(() => {
     let alive = true
     fetch(FONT).then((r) => r.json()).then((font) => {
@@ -80,18 +75,14 @@ function useLetters(): NameData | null {
       }
       addRow(ROW_BOTTOM, -SIZE * 0.55, 1)
       addRow(ROW_TOP, SIZE * 0.62, 2)
-      // Widest row + scatter margin, in the same units as letter x — used to fit the name to
-      // the screen width on narrow (portrait) screens so the whole name is always visible.
-      const rowTotal = (row: string) => rowWidths(font, row).reduce((a, b) => a + b, 0)
-      const width = Math.max(rowTotal(ROW_TOP), rowTotal(ROW_BOTTOM)) + SIZE * 0.12
-      setData({ letters, width })
+      setData(letters)
     }).catch(() => {})
     return () => { alive = false }
   }, [])
   return data
 }
 
-function Letters({ letters, width }: { letters: Letter[]; width: number }) {
+function Letters({ letters }: { letters: Letter[] }) {
   const scroll = useScroll()
   const group = useRef<THREE.Group>(null)
   const holders = useRef<(THREE.Group | null)[]>([])
@@ -108,10 +99,7 @@ function Letters({ letters, width }: { letters: Letter[]; width: number }) {
       tmp.m.makeBasis(t.right, t.up, t.normal)
       g.quaternion.setFromRotationMatrix(tmp.m)
       g.position.copy(t.center).addScaledVector(t.normal, -NAME_DEPTH * t.height)
-      // Normally scale by screen height (units are screen-heights). On narrow/portrait screens
-      // the name would overflow the screen width and get cut off, so clamp the scale so the
-      // widest row fits within 90% of the screen width — full name visible, just smaller.
-      g.scale.setScalar(Math.min(t.height, (t.width * 0.9) / width))
+      g.scale.setScalar(t.height)
       oriented.current = true
     }
 
@@ -171,11 +159,11 @@ function Letters({ letters, width }: { letters: Letter[]; width: number }) {
 // Scroll-driven 3D name reveal: "BEN NUDELMAN" letters drop in (scrubbed by scroll) and
 // settle into a scattered, non-straight arrangement — NUDELMAN on the bottom, BEN on top.
 export default function NameReveal() {
-  const data = useLetters()
-  if (!data) return null
+  const letters = useLetters()
+  if (!letters) return null
   return (
     <Suspense fallback={null}>
-      <Letters letters={data.letters} width={data.width} />
+      <Letters letters={letters} />
     </Suspense>
   )
 }

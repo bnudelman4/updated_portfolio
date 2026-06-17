@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ScrollControls, Scroll, useScroll, Loader } from '@react-three/drei'
 import * as THREE from 'three'
@@ -9,7 +9,7 @@ import Scene from './Scene'
 import CameraRig from './CameraRig'
 import NameReveal from './NameReveal'
 import Effects from './Effects'
-import { HANDOFF_START, HANDOFF_END, BLACK_START, BLACK_FULL, HERO_FRACTION, heroProgress } from './cameraKeyframes'
+import { HANDOFF_START, HANDOFF_END, BLACK_START, BLACK_FULL, heroProgress, setHeroFraction } from './cameraKeyframes'
 import About from '@/components/About'
 import Work from '@/components/Work'
 import Experience from '@/components/Experience'
@@ -17,12 +17,13 @@ import Skills from '@/components/Skills'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 
-// Total scroll length in viewport-heights. The hero uses the first HERO_FRACTION of it
-// (see the spacer below); the rest is portfolio room. drei's scroll length is fixed at PAGES
-// regardless of content height, so the portfolio must fit in (1-HERO_FRACTION)*PAGES screens
-// or its tail (Contact/Footer) gets clipped — taller on mobile, so size with margin. With 13
-// projects the Work section alone is 13 screens; ~24 screens of portfolio room covers it.
-const PAGES = 33
+// Total scroll length in viewport-heights, per device. drei's scroll length is fixed at `pages`
+// regardless of content height, so the portfolio must fit in (1-fraction)*pages screens or its
+// tail (Contact/Footer) gets clipped, while too much leaves dead scroll past the bottom.
+// Desktop keeps the original 26/0.37 (room ≈ 16.4 screens). Mobile content is taller (text
+// wraps), so 30/0.32 gives ≈ 20.4 screens of room. Both keep hero length ≈ 9.6 screens.
+const DESKTOP = { pages: 26, fraction: 0.37 }
+const MOBILE = { pages: 30, fraction: 0.32 }
 
 const smoothstep = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
@@ -131,6 +132,13 @@ function CrossfadeController() {
 }
 
 export default function Experience3D() {
+  // Resolve device config once, synchronously (client-only — this component is ssr:false), so
+  // the spacer height and ScrollControls pages match on the first paint with no reflow.
+  const [{ pages, fraction }] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches ? MOBILE : DESKTOP
+  )
+  setHeroFraction(fraction) // module state read by heroProgress() each frame; idempotent
+
   return (
     <>
       <Canvas
@@ -148,7 +156,7 @@ export default function Experience3D() {
         <color attach="background" args={['#05060a']} />
         <AdaptiveCamera />
         <Suspense fallback={null}>
-          <ScrollControls pages={PAGES} damping={0.08}>
+          <ScrollControls pages={pages} damping={0.08}>
             <LenisController />
             <Scene />
             <NameReveal />
@@ -157,7 +165,7 @@ export default function Experience3D() {
             <CrossfadeController />
             <Scroll html style={{ width: '100%' }}>
               {/* reserves scroll room for the whole hero; portfolio (any length) flows after */}
-              <div style={{ height: `${HERO_FRACTION * PAGES * 100}vh` }} />
+              <div style={{ height: `${fraction * pages * 100}vh` }} />
               {/* intro fades in after the name completes; boot-black bg keeps the handoff seamless */}
               <div id="portfolio" className="bg-bg" style={{ opacity: 0 }}>
                 <About />

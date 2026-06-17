@@ -41,6 +41,11 @@ export default function Work() {
   const openRef = useRef(false)
   openRef.current = open
 
+  // Mobile-only full-screen text reader: hides the model so the project copy fills the screen.
+  const [expanded, setExpanded] = useState(false)
+  const expandedRef = useRef(false)
+  expandedRef.current = expanded
+
   // Narrow screens stack the detail BELOW a shrunk model instead of beside it (no overlap).
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
@@ -76,7 +81,12 @@ export default function Work() {
         const raw = clamp(-sec.getBoundingClientRect().top / range, 0, 1)
         phaseRef.current = raw
 
-        if (openRef.current && Math.abs(raw - lastRaw.current) > 0.0012) setOpen(false)
+        // Any scroll collapses an open detail / full-text reader, then advances to the next
+        // project — so one scroll returns to the plain model view (the next one), as before.
+        if ((openRef.current || expandedRef.current) && Math.abs(raw - lastRaw.current) > 0.0012) {
+          setOpen(false)
+          setExpanded(false)
+        }
         lastRaw.current = raw
 
         const i = clamp(Math.round(raw * (projects.length - 1)), 0, projects.length - 1)
@@ -102,7 +112,7 @@ export default function Work() {
 
   const current = projects[index]
   const cta = current.live || current.github
-  const toggle = () => setOpen((o) => !o)
+  const toggle = () => setOpen((o) => { if (o) setExpanded(false); return !o })
 
   const onCursorMove = (e: React.MouseEvent) => {
     const rect = panel.current?.getBoundingClientRect()
@@ -248,8 +258,69 @@ export default function Work() {
                       </a>
                     </motion.div>
                   )}
+
+                  {/* Mobile: open a full-screen reader with the complete copy (which is clamped
+                      in this compact stacked panel). */}
+                  <motion.button
+                    variants={reduced ? undefined : POP}
+                    onClick={() => setExpanded(true)}
+                    className="md:hidden mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent underline underline-offset-4"
+                  >
+                    More information →
+                  </motion.button>
                 </div>
               </motion.aside>
+            )}
+          </AnimatePresence>
+
+          {/* Mobile full-text reader: opaque overlay hides the model so the full project copy
+              fills the screen. Back returns to the model+text view; scrolling (handled above)
+              collapses it and advances to the next project. */}
+          <AnimatePresence>
+            {expanded && (
+              <motion.div
+                key="reader"
+                className="absolute inset-0 z-40 flex flex-col overflow-y-auto bg-bg pt-6 pb-12 md:hidden"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 24 }}
+                transition={{ duration: 0.28 }}
+              >
+                <button
+                  onClick={() => setExpanded(false)}
+                  className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white/80 transition hover:bg-white/10"
+                >
+                  ← Back
+                </button>
+                {current.timeframe && (
+                  <p className="mb-3 font-mono text-xs text-accent2">{current.timeframe}</p>
+                )}
+                <h3 className="font-display text-4xl font-bold uppercase leading-[0.95] tracking-tight">
+                  {current.name}
+                </h3>
+                <p className="mt-2 font-mono text-xs text-white/40">{current.category}</p>
+                <p className="mt-5 text-base leading-relaxed text-white/60">{current.description}</p>
+                <ul className="mt-6 space-y-3">
+                  {current.features.map((f, i) => (
+                    <li key={i} className="flex gap-2 text-sm text-white/60">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                {cta && (
+                  <div className="mt-8 flex flex-wrap gap-3">
+                    <a
+                      href={cta}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full bg-white px-6 py-2.5 text-sm font-medium text-black transition hover:bg-white/90"
+                    >
+                      {current.live ? 'Visit site ↗' : 'View repo ↗'}
+                    </a>
+                  </div>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
 
