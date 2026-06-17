@@ -5,7 +5,10 @@ export interface Keyframe { offset: number; position: Vec3; lookAt: Vec3 }
 // [0,1], decoupled from the page's total scroll. heroProgress() maps the raw drei scroll
 // offset into this space: the hero occupies just the first HERO_FRACTION of total scroll,
 // and everything after is the normal-flow DOM portfolio (which can be any length).
-export const HERO_FRACTION = 0.37
+// Fraction of total scroll the hero occupies. Hero scroll length = HERO_FRACTION * PAGES
+// screens; portfolio room = (1-HERO_FRACTION) * PAGES. Kept so hero length ≈ 0.29*33 ≈ 9.6
+// screens (unchanged from the old 0.37*26), while PAGES grew to give the portfolio more room.
+export const HERO_FRACTION = 0.29
 export const heroProgress = (offset: number) => Math.min(1, Math.max(0, offset / HERO_FRACTION))
 
 // Camera timeline, expressed in SCREEN-LOCAL space so it works for any model:

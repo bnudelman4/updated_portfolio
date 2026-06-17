@@ -18,8 +18,11 @@ import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 
 // Total scroll length in viewport-heights. The hero uses the first HERO_FRACTION of it
-// (see the spacer below); the rest is portfolio room — bump this if content is cut off.
-const PAGES = 26
+// (see the spacer below); the rest is portfolio room. drei's scroll length is fixed at PAGES
+// regardless of content height, so the portfolio must fit in (1-HERO_FRACTION)*PAGES screens
+// or its tail (Contact/Footer) gets clipped — taller on mobile, so size with margin. With 13
+// projects the Work section alone is 13 screens; ~24 screens of portfolio room covers it.
+const PAGES = 33
 
 const smoothstep = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
@@ -66,6 +69,26 @@ function Backdrop() {
     const t = smoothstep(BLACK_START, BLACK_FULL, heroProgress(scroll.offset))
     scene.background.copy(void0).lerp(black, t)
   })
+  return null
+}
+
+// Keep the desk fully framed on any aspect. A PerspectiveCamera holds VERTICAL fov fixed and
+// narrows HORIZONTAL fov as the viewport gets taller — so on a portrait phone the wide desk is
+// cropped at the sides at the start. We instead hold the HORIZONTAL fov constant (matching the
+// landscape framing) by widening vertical fov on narrow screens, which zooms out so the whole
+// desk is visible for the fly-in. Landscape (>=16:9) keeps the original 38° vertical fov.
+function AdaptiveCamera() {
+  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera
+  const size = useThree((s) => s.size)
+  useEffect(() => {
+    const REF_ASPECT = 16 / 9
+    const REF_VFOV = 38
+    const baseH = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(REF_VFOV) / 2) * REF_ASPECT)
+    const aspect = size.width / Math.max(1, size.height)
+    const vFov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(baseH / 2) / aspect))
+    camera.fov = Math.min(112, Math.max(REF_VFOV, vFov))
+    camera.updateProjectionMatrix()
+  }, [camera, size])
   return null
 }
 
@@ -123,6 +146,7 @@ export default function Experience3D() {
       >
         {/* Dark void — the visible background; HDRI is reflections-only. */}
         <color attach="background" args={['#05060a']} />
+        <AdaptiveCamera />
         <Suspense fallback={null}>
           <ScrollControls pages={PAGES} damping={0.08}>
             <LenisController />

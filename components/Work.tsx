@@ -41,6 +41,16 @@ export default function Work() {
   const openRef = useRef(false)
   openRef.current = open
 
+  // Narrow screens stack the detail BELOW a shrunk model instead of beside it (no overlap).
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => setIsMobile(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   // Per-project fade-up, driven on the DOM canvas wrapper (no 3D transparency sorting).
   const enterAt = useRef(-1)
   const modelOpacity = useMotionValue(reduced ? 1 : 0)
@@ -101,9 +111,13 @@ export default function Work() {
     curY.set(e.clientY - rect.top)
   }
 
-  const stageAnim = reduced
-    ? { x: open ? '-20%' : '0%', scale: open ? 0.92 : 1 }
-    : { x: open ? '-26%' : '0%', scale: open ? 0.9 : 1 }
+  // On open: mobile shrinks the model and lifts it up (detail stacks beneath); desktop slides
+  // the model left to make room for the side panel.
+  const stageAnim = !open
+    ? { x: '0%', y: '0%', scale: 1 }
+    : isMobile
+      ? { x: '0%', y: '-26%', scale: 0.56 }
+      : { x: reduced ? '-20%' : '-26%', y: '0%', scale: reduced ? 0.92 : 0.9 }
   const stageTransition = reduced
     ? { duration: 0.25 }
     : ({ type: 'spring', stiffness: 120, damping: 20, mass: 0.9 } as const)
@@ -184,7 +198,7 @@ export default function Work() {
             {open && (
               <motion.aside
                 key="detail"
-                className="absolute top-0 right-0 z-20 flex h-full w-full items-center md:w-[46%]"
+                className="absolute inset-x-0 bottom-0 z-20 flex h-[46%] items-start overflow-hidden md:inset-x-auto md:right-0 md:top-0 md:bottom-auto md:h-full md:w-[46%] md:items-center"
                 variants={reduced ? undefined : STAGGER}
                 initial={reduced ? { opacity: 0 } : 'hidden'}
                 animate={reduced ? { opacity: 1 } : 'show'}
@@ -199,7 +213,7 @@ export default function Work() {
                   )}
                   <motion.h3
                     variants={reduced ? undefined : POP}
-                    className="font-display font-bold uppercase text-4xl md:text-5xl tracking-tight leading-[0.95] origin-left"
+                    className="font-display font-bold uppercase text-3xl md:text-5xl tracking-tight leading-[0.95] origin-left"
                   >
                     {current.name}
                   </motion.h3>
@@ -208,12 +222,12 @@ export default function Work() {
                   </motion.p>
                   {/* Body matches the About section's body style (was: text-white/60). Headings
                       above use the same font-display uppercase treatment as the About headline. */}
-                  <motion.p variants={reduced ? undefined : POP} className="mt-5 text-lg text-white/55 leading-relaxed line-clamp-5 origin-left">
+                  <motion.p variants={reduced ? undefined : POP} className="mt-3 md:mt-5 text-base md:text-lg text-white/55 leading-relaxed line-clamp-3 md:line-clamp-5 origin-left">
                     {current.description}
                   </motion.p>
 
-                  {/* small feature/stat points */}
-                  <ul className="mt-5 space-y-2">
+                  {/* small feature/stat points — hidden on mobile to keep the stacked panel compact */}
+                  <ul className="mt-4 md:mt-5 space-y-2 hidden md:block">
                     {current.features.slice(0, 3).map((f, i) => (
                       <motion.li key={i} variants={reduced ? undefined : POP} className="flex gap-2 text-sm text-white/55 origin-left">
                         <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
@@ -223,7 +237,7 @@ export default function Work() {
                   </ul>
 
                   {cta && (
-                    <motion.div variants={reduced ? undefined : POP} className="mt-7 flex flex-wrap gap-3">
+                    <motion.div variants={reduced ? undefined : POP} className="mt-4 md:mt-7 flex flex-wrap gap-3">
                       <a
                         href={cta}
                         target="_blank"
