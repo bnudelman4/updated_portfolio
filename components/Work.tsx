@@ -147,7 +147,7 @@ export default function Work() {
         {/* Persistent corner CTA (Scout's "build with us") */}
         <button
           onClick={(e) => { e.currentTarget.blur(); scrollToId('contact') }}
-          className="absolute top-6 right-6 z-50 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-5 py-2.5 text-sm text-white backdrop-blur hover:bg-accent/20 transition"
+          className={`absolute top-6 right-6 z-50 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-5 py-2.5 text-sm text-white backdrop-blur hover:bg-accent/20 transition ${expanded ? 'max-md:hidden' : ''}`}
         >
           <span className="h-2 w-2 rounded-full bg-accent2 animate-pulse" />
           build with me →
@@ -280,7 +280,8 @@ export default function Work() {
             {expanded && (
               <motion.div
                 key="reader"
-                className="absolute inset-0 z-40 flex flex-col overflow-y-auto bg-bg pt-6 pb-12 md:hidden"
+                // z above the in-canvas corner button (z-50); pt clears the fixed top nav bar
+                className="absolute inset-0 z-[70] flex flex-col overflow-y-auto bg-bg pt-20 pb-12 md:hidden"
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 24 }}

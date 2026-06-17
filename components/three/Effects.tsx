@@ -4,7 +4,15 @@ import { EffectComposer, Bloom, SMAA, Vignette } from '@react-three/postprocessi
 // Lean pipeline: SMAA (MSAA off to avoid conflict), Bloom for the glowing boot screen,
 // a soft vignette to seat the setup in the void. DOF/chromatic/noise intentionally cut —
 // they blur the screen during the push-in and are the first things to drop for fps.
-export default function Effects() {
+// Mobile drops the expensive Bloom (mipmap blur) + Vignette, keeping only SMAA, to cut lag.
+export default function Effects({ mobile = false }: { mobile?: boolean }) {
+  if (mobile) {
+    return (
+      <EffectComposer multisampling={0}>
+        <SMAA />
+      </EffectComposer>
+    )
+  }
   return (
     <EffectComposer multisampling={0}>
       <SMAA />

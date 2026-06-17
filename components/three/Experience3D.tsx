@@ -17,13 +17,16 @@ import Skills from '@/components/Skills'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 
-// Total scroll length in viewport-heights, per device. drei's scroll length is fixed at `pages`
-// regardless of content height, so the portfolio must fit in (1-fraction)*pages screens or its
-// tail (Contact/Footer) gets clipped, while too much leaves dead scroll past the bottom.
-// Desktop keeps the original 26/0.37 (room ≈ 16.4 screens). Mobile content is taller (text
-// wraps), so 30/0.32 gives ≈ 20.4 screens of room. Both keep hero length ≈ 9.6 screens.
+// Total scroll length in viewport-heights. drei's scroll length is fixed at `pages` regardless
+// of content height, so the portfolio must fit in (1-fraction)*pages screens or its tail
+// (Contact/Footer) gets clipped, while too much leaves dead scroll past the bottom. Desktop
+// keeps the original tuned 26/0.37; mobile content height varies (text wrap, dynamic type), so
+// it's MEASURED at runtime (see below) and pages sized exactly to it. Hero stays ≈ 9.6 screens.
 const DESKTOP = { pages: 26, fraction: 0.37 }
-const MOBILE = { pages: 30, fraction: 0.32 }
+const HERO_SCREENS = 9.6
+const MOBILE_INIT = { pages: 28, fraction: HERO_SCREENS / 28 }
+const isMobileViewport = () =>
+  typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
 
 const smoothstep = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
@@ -132,20 +135,47 @@ function CrossfadeController() {
 }
 
 export default function Experience3D() {
-  // Resolve device config once, synchronously (client-only — this component is ssr:false), so
-  // the spacer height and ScrollControls pages match on the first paint with no reflow.
-  const [{ pages, fraction }] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches ? MOBILE : DESKTOP
-  )
+  // Client-only (ssr:false). Desktop is untouched; mobile gets a lighter render + measured room.
+  const [mobile] = useState(isMobileViewport)
+  const [{ pages, fraction }, setCfg] = useState(() => (mobile ? MOBILE_INIT : DESKTOP))
+
+  // Mobile: size the scroll room to the ACTUAL portfolio height so the tail (Contact/Footer)
+  // is never clipped and there's no dead scroll past the bottom. Re-measures on content/size
+  // changes (fonts loading, rotation) via ResizeObserver. Desktop keeps its tuned constants.
+  useEffect(() => {
+    if (!mobile) return
+    let ro: ResizeObserver | null = null
+    let raf = 0
+    const measure = () => {
+      const el = document.getElementById('portfolio')
+      if (!el) return
+      const screens = el.scrollHeight / window.innerHeight
+      const pages = Math.max(12, Math.ceil(HERO_SCREENS + screens + 0.3))
+      setCfg((prev) => (prev.pages === pages ? prev : { pages, fraction: HERO_SCREENS / pages }))
+    }
+    const attach = () => {
+      const el = document.getElementById('portfolio')
+      if (!el) { raf = requestAnimationFrame(attach); return }
+      ro = new ResizeObserver(measure)
+      ro.observe(el)
+      measure()
+    }
+    raf = requestAnimationFrame(attach)
+    window.addEventListener('resize', measure)
+    return () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener('resize', measure) }
+  }, [mobile])
+
   setHeroFraction(fraction) // module state read by heroProgress() each frame; idempotent
 
   return (
     <>
       <Canvas
-        dpr={[1, 2]}
+        // Mobile: cap pixel ratio and drop the soft-shadow map pass — both are the heaviest
+        // per-frame costs and the main source of mobile lag. Desktop keeps full quality.
+        dpr={mobile ? 1.5 : [1, 2]}
         gl={{ antialias: false, powerPreference: 'high-performance' }}
         camera={{ position: [4, 3, 12], fov: 38, near: 0.01, far: 100 }}
-        shadows="soft"
+        shadows={mobile ? false : 'soft'}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping
           gl.toneMappingExposure = 0.88
@@ -179,7 +209,7 @@ export default function Experience3D() {
             {/* registered after <Scroll html> so its useFrame runs after drei's content transform */}
             <WorkPin />
           </ScrollControls>
-          <Effects />
+          <Effects mobile={mobile} />
         </Suspense>
       </Canvas>
       {/* Boot-styled loading screen while the model streams in. */}

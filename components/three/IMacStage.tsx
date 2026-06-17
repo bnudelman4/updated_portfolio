@@ -10,6 +10,8 @@ import PhoneModel from './PhoneModel'
 
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 const BASE_SCALE = 1.12
+const isMobileViewport = () =>
+  typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
 
 function Rig({
   projects,
@@ -76,8 +78,10 @@ export default function IMacStage({
   reduced: boolean
   onIndex: (i: number) => void
 }) {
+  // Mobile: cap DPR and turn off MSAA to ease lag on the project model canvas. Desktop unchanged.
+  const mobile = isMobileViewport()
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [0, 0.1, 6.4], fov: 32 }} gl={{ antialias: true }}>
+    <Canvas dpr={mobile ? 1.5 : [1, 2]} camera={{ position: [0, 0.1, 6.4], fov: 32 }} gl={{ antialias: !mobile }}>
       <ambientLight intensity={0.45} />
       {/* dramatic key + rim */}
       <directionalLight position={[5, 6, 5]} intensity={2.6} color="#fff3e6" castShadow />
