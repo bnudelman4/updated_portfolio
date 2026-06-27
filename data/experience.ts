@@ -14,6 +14,19 @@ export const experience: ExperienceEntry[] = [
     ],
   },
   {
+    id: 'snapmate',
+    logo: '/snapmate.png',
+    role: 'Full Stack Software Engineer Intern',
+    org: 'SnapMatePhoto',
+    start: 'June 2026',
+    end: 'Present',
+    bullets: [
+      'Build and ship production features across the booking, photographer, and admin sides of a two-sided photography marketplace.',
+      'Work with Stripe Connect for escrow, payouts, and refunds, and fix real customer-reported issues while improving performance of core flows including search, booking, and payments.',
+      'Collaborate directly with the founder and lead developer on architecture decisions, working across PHP, jQuery, Bootstrap, MySQL, AWS, and Redis.',
+    ],
+  },
+  {
     id: 'c2s2',
     logo: '/c2s2.png',
     role: 'Embedded Software Engineer',
