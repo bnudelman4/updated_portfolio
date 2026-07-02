@@ -14,6 +14,19 @@ export const experience: ExperienceEntry[] = [
     ],
   },
   {
+    id: 'hyperlink',
+    logo: '/hyperlink.jpeg',
+    role: 'AI / Software Engineering Intern',
+    org: 'Hyperlink',
+    start: 'June 2026',
+    end: 'Present',
+    bullets: [
+      'Develop autonomous AI agent systems that combine large language models, tool use, browser automation, and API integrations to execute complex multi-step workflows across web and enterprise applications.',
+      'Design and implement multi-agent orchestration frameworks, memory systems, and task-planning infrastructure that enable specialized AI agents to coordinate and complete long-horizon objectives autonomously.',
+      'Build distributed GPU compute and orchestration infrastructure supporting large-scale AI inference, resource provisioning, monitoring, and deployment of autonomous agent workloads.',
+    ],
+  },
+  {
     id: 'snapmate',
     logo: '/snapmate.png',
     role: 'Full Stack Software Engineer Intern',
