@@ -19,11 +19,12 @@ import Footer from '@/components/Footer'
 
 // Total scroll length in viewport-heights. drei's scroll length is fixed at `pages` regardless
 // of content height, so the portfolio must fit in (1-fraction)*pages screens or its tail
-// (Contact/Footer) gets clipped, while too much leaves dead scroll past the bottom. Desktop
-// keeps the original tuned 26/0.37; mobile content height varies (text wrap, dynamic type), so
-// it's MEASURED at runtime (see below) and pages sized exactly to it. Hero stays ≈ 9.6 screens.
-const DESKTOP = { pages: 26, fraction: 0.37 }
+// (Contact/Footer) gets clipped, while too much leaves dead scroll past the bottom. Content
+// height varies with entries (work/experience cards, text wrap, dynamic type), so BOTH desktop
+// and mobile MEASURE the real portfolio height at runtime (see below) and size pages exactly to
+// it. The constants below are only the pre-measure starting values. Hero stays ≈ 9.6 screens.
 const HERO_SCREENS = 9.6
+const DESKTOP = { pages: 26, fraction: 0.37 }
 const MOBILE_INIT = { pages: 28, fraction: HERO_SCREENS / 28 }
 const isMobileViewport = () =>
   typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
@@ -139,11 +140,11 @@ export default function Experience3D() {
   const [mobile] = useState(isMobileViewport)
   const [{ pages, fraction }, setCfg] = useState(() => (mobile ? MOBILE_INIT : DESKTOP))
 
-  // Mobile: size the scroll room to the ACTUAL portfolio height so the tail (Contact/Footer)
-  // is never clipped and there's no dead scroll past the bottom. Re-measures on content/size
-  // changes (fonts loading, rotation) via ResizeObserver. Desktop keeps its tuned constants.
+  // Size the scroll room to the ACTUAL portfolio height so the tail (Contact/Footer) is never
+  // clipped and there's no dead scroll past the bottom. Re-measures on content/size changes
+  // (fonts loading, rotation, added entries) via ResizeObserver. Runs on desktop AND mobile so
+  // editing the work/experience lists can't push the tail out of reach.
   useEffect(() => {
-    if (!mobile) return
     let ro: ResizeObserver | null = null
     let raf = 0
     const measure = () => {
